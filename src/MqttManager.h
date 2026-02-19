@@ -12,6 +12,7 @@ class MqttManager {
     const char* _pass;
     const char* _server;
     int _port;
+    const char* _topicToSubscribe = ""; // On mémorise le topic à écouter
 
     void setup_wifi() {
       delay(10);
@@ -31,7 +32,6 @@ class MqttManager {
       Serial.println(WiFi.localIP());
     }
 
-    // Fonction interne pour se reconnecter si ça coupe
     void reconnect() {
       while (!client.connected()) {
         Serial.print("Connexion MQTT...");
@@ -39,6 +39,9 @@ class MqttManager {
         
         if (client.connect(clientId.c_str())) {
           Serial.println("Connecté !");
+          if (String(_topicToSubscribe) != "") {
+            client.subscribe(_topicToSubscribe);
+          }
         } else {
           Serial.print("Echec, rc=");
           Serial.print(client.state());
@@ -49,7 +52,6 @@ class MqttManager {
     }
 
   public:
-    
     MqttManager(const char* ssid, const char* pass, const char* server, int port) 
       : client(espClient) { 
       _ssid = ssid;
@@ -70,9 +72,22 @@ class MqttManager {
       client.loop();
     }
 
-    // Fonction facile pour envoyer un message (IA)
     void publish(const char* topic, String message) {
       client.publish(topic, message.c_str());
+    }
+    
+    // IA ma aidé à savoir cpmment intégrer mes topics d'abonnement dans la classe MQTT,
+    // et surtout à faire en sorte que l'ESP32 puisse se réabonner automatiquement après une reconnexion 
+    //Définir quelle fonction appeler quand on reçoit un message
+    void setCallback(MQTT_CALLBACK_SIGNATURE) {
+      client.setCallback(callback);
+    }
+
+    void subscribe(const char* topic) {
+      _topicToSubscribe = topic;
+      if (client.connected()) {
+        client.subscribe(_topicToSubscribe);
+      }
     }
     
     String getMacAddress() {
