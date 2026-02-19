@@ -35,7 +35,6 @@ class MqttManager {
     void reconnect() {
       while (!client.connected()) {
         Serial.print("Connexion MQTT...");
-        // ID Unique basé sur la MAC address
         String clientId = "ESP32Lab-" + WiFi.macAddress();
         
         if (client.connect(clientId.c_str())) {
@@ -50,22 +49,20 @@ class MqttManager {
     }
 
   public:
-    // Constructeur : on reçoit les infos de connexion
+    
     MqttManager(const char* ssid, const char* pass, const char* server, int port) 
-      : client(espClient) { // Initialise le client MQTT avec le client WiFi
+      : client(espClient) { 
       _ssid = ssid;
       _pass = pass;
       _server = server;
       _port = port;
     }
 
-    // Démarrage : lance le WiFi et configure le serveur MQTT
     void begin() {
       setup_wifi();
       client.setServer(_server, _port);
     }
 
-    // La boucle à appeler tout le temps : gère la survie de la connexion
     void loop() {
       if (!client.connected()) {
         reconnect();
@@ -73,12 +70,11 @@ class MqttManager {
       client.loop();
     }
 
-    // Fonction facile pour envoyer un message
+    // Fonction facile pour envoyer un message (IA)
     void publish(const char* topic, String message) {
       client.publish(topic, message.c_str());
     }
     
-    // Pour récupérer l'adresse MAC (utile pour le JSON)
     String getMacAddress() {
       return WiFi.macAddress();
     }

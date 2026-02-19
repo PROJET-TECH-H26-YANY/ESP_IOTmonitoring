@@ -1,31 +1,36 @@
 #include <Arduino.h>
 #include "Secrets.h"      
 #include "MqttManager.h"
+#include "RfidManager.h" 
 
 MqttManager monReseauMQTT(WIFI_SSID, WIFI_PASS, MQTT_SERVER, MQTT_PORT);
 
-unsigned long dernierTempsEnvoi = 0;
-const long delaiEntreEnvois = 5000;
+const int PIN_SDA_SS = 5;
+const int PIN_RST = 4;
+RfidManager monLecteurRFID(PIN_SDA_SS, PIN_RST);
 
 void setup() {
   Serial.begin(9600);
+  
   monReseauMQTT.begin();
+  monLecteurRFID.begin();
 }
 
 void loop() {
   monReseauMQTT.loop();
 
-  // On vérifie si 5 secondes se sont écoulées depuis le dernier envoi
-  unsigned long tempsActuel = millis();
-  if (tempsActuel - dernierTempsEnvoi >= delaiEntreEnvois) {
-    dernierTempsEnvoi = tempsActuel;
+  String uidBadge = monLecteurRFID.lireBadge();
 
-    // Création d'un message simple
-    String messageTest = "{\"message\": \"Bonjour depuis l'ESP32 !\"}";
+  if (uidBadge != "") {
+    Serial.print("Badge détecté ! UID : ");
+    Serial.println(uidBadge);
+
+    String payload = "{\"mac\": \"" + monReseauMQTT.getMacAddress() + "\", \"nfc\": \"" + uidBadge + "\"}";
     
-    // On publie le message sur le topic de test
-    monReseauMQTT.publish("test", messageTest);
+    monReseauMQTT.publish(TOPIC_AUTH, payload); 
     
-    Serial.println("Message de test envoyé au VPS !");
+    Serial.println("-> Message envoyé au VPS !");
+
+    delay(4000); 
   }
 }
