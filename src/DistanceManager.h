@@ -5,16 +5,13 @@
 
 class DistanceManager {
   private:
-    int _rxPin;
-    int _txPin;
-    HardwareSerial& _serialPort; 
+    int _rxPin, _txPin;
+    HardwareSerial& _serialPort;
 
   public:
     DistanceManager(int rxPin, int txPin, HardwareSerial& serialPort = Serial2);
-
     void begin();
-    
-    float lireDistanceCm(); 
+    float readDistanceCm(); 
 };
 
 #endif

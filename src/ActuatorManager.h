@@ -6,18 +6,14 @@
 
 class ActuatorManager {
   private:
-    int _pinLed;
-    int _pinBuzzer;
+    int _ledPin, _buzzerPin;
 
   public:
-    ActuatorManager(int pinLed, int pinBuzzer);
-
+    ActuatorManager(int ledPin, int buzzerPin);
     void begin();
-
-    void traiterCommandeJSON(JsonDocument& doc);
-
-    void clignoterErreur();
-    void bipCourt();
+    void processCommand(JsonDocument& doc); 
+    void shortBeep();                       
+    void blinkError();                      
 };
 
 #endif

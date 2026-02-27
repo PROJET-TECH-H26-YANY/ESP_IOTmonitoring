@@ -1,57 +1,38 @@
 #include "ActuatorManager.h"
 
-ActuatorManager::ActuatorManager(int pinLed, int pinBuzzer) {
-  _pinLed = pinLed;
-  _pinBuzzer = pinBuzzer;
+ActuatorManager::ActuatorManager(int ledPin, int buzzerPin) {
+  _ledPin = ledPin;
+  _buzzerPin = buzzerPin;
 }
 
 void ActuatorManager::begin() {
-  pinMode(_pinLed, OUTPUT);
-  pinMode(_pinBuzzer, OUTPUT);
-  
-  digitalWrite(_pinLed, LOW);
-  digitalWrite(_pinBuzzer, LOW);
+  pinMode(_ledPin, OUTPUT);
+  pinMode(_buzzerPin, OUTPUT);
+  digitalWrite(_ledPin, LOW);
+  digitalWrite(_buzzerPin, LOW);
 }
 
-// Traitement des ordres venus du MQTT (Node-RED)
-void ActuatorManager::traiterCommandeJSON(JsonDocument& doc) {
-  
+void ActuatorManager::processCommand(JsonDocument& doc) {
   if (doc.containsKey("led")) {
-    if (doc["led"] == 100) {
-      digitalWrite(_pinLed, HIGH);
-    } 
-    else if (doc["led"] == 0) {
-      digitalWrite(_pinLed, LOW);
-    } 
-    else if (doc["led"] == "blink_red") {
-      clignoterErreur();
-    }
+    if (doc["led"] == 100) digitalWrite(_ledPin, HIGH);
+    else if (doc["led"] == 0) digitalWrite(_ledPin, LOW);
+    else if (doc["led"] == "blink_red") blinkError();
   }
 
   if (doc.containsKey("buzzer")) {
-    if (doc["buzzer"] == true) {
-      digitalWrite(_pinBuzzer, HIGH);
-    } 
-    else if (doc["buzzer"] == false) {
-      digitalWrite(_pinBuzzer, LOW);
-    } 
-    else if (doc["buzzer"] == "short") {
-      bipCourt();
-    }
+    if (doc["buzzer"] == true) digitalWrite(_buzzerPin, HIGH);
+    else if (doc["buzzer"] == false) digitalWrite(_buzzerPin, LOW);
+    else if (doc["buzzer"] == "short") shortBeep();
   }
 }
 
-void ActuatorManager::clignoterErreur() {
-  for(int i = 0; i < 3; i++) {
-    digitalWrite(_pinLed, HIGH); 
-    delay(150);
-    digitalWrite(_pinLed, LOW);  
-    delay(150);
-  }
+void ActuatorManager::shortBeep() {
+  digitalWrite(_buzzerPin, HIGH); delay(100); digitalWrite(_buzzerPin, LOW);
 }
 
-void ActuatorManager::bipCourt() {
-  digitalWrite(_pinBuzzer, HIGH); 
-  delay(100); 
-  digitalWrite(_pinBuzzer, LOW);
+void ActuatorManager::blinkError() {
+  for(int i=0; i<3; i++) {
+    digitalWrite(_ledPin, HIGH); delay(150);
+    digitalWrite(_ledPin, LOW); delay(150);
+  }
 }

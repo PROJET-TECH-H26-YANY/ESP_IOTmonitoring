@@ -12,7 +12,7 @@ class MqttManager {
     const char* _pass;
     const char* _server;
     int _port;
-    const char* _topicToSubscribe = ""; // On mémorise le topic à écouter
+    const char* _topicToSubscribe = ""; 
 
     void setup_wifi() {
       delay(10);
@@ -76,7 +76,7 @@ class MqttManager {
     
     // IA ma aidé à savoir cpmment intégrer mes topics d'abonnement dans la classe MQTT,
     // et surtout à faire en sorte que l'ESP32 puisse se réabonner automatiquement après une reconnexion 
-    //Définir quelle fonction appeler quand on reçoit un message
+    // Définir quelle fonction appeler quand on reçoit un message
     void setCallback(MQTT_CALLBACK_SIGNATURE) {
       client.setCallback(callback);
     }
