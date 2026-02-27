@@ -27,8 +27,7 @@ class MqttManager {
         Serial.print(".");
       }
 
-      Serial.println("\nWiFi connecté !");
-      Serial.print("IP: ");
+      Serial.println("\nWiFi connecté ! IP: ");
       Serial.println(WiFi.localIP());
     }
 
@@ -43,9 +42,8 @@ class MqttManager {
             client.subscribe(_topicToSubscribe);
           }
         } else {
-          Serial.print("Echec, rc=");
           Serial.print(client.state());
-          Serial.println(" (nouvelle tentative dans 5s)");
+          Serial.println(" Echec nouvelle tentative dans 5s");
           delay(5000);
         }
       }
