@@ -12,6 +12,9 @@ void RfidManager::begin() {
   Serial.println("RFID Reader Ready");
 }
 
+// Logique de lecture du badge RFID basé sur la bibliothèque MFRC522 et les exemples du net 
+// IA a transform.
+// Source : https://www.youtube.com/watch?v=pJLjFm4Ipro
 String RfidManager::readBadge() {
   if (!_mfrc522->PICC_IsNewCardPresent()) return "";
   if (!_mfrc522->PICC_ReadCardSerial()) return "";
@@ -23,7 +26,7 @@ String RfidManager::readBadge() {
   }
   
   uid.toUpperCase(); 
-  _mfrc522->PICC_HaltA(); 
+  _mfrc522->PICC_HaltA();   
   
   return uid;
 }
