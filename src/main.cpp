@@ -6,7 +6,9 @@
 #include "RfidManager.h"
 #include "ActuatorManager.h"
 #include "DistanceManager.h"
+#include "DisplayManager.h"
 
+DisplayManager oled; 
 MqttManager mqtt(WIFI_SSID, WIFI_PASS, MQTT_SERVER, MQTT_PORT);
 RfidManager rfid(RFID_SS_PIN, RFID_RST_PIN);
 ActuatorManager actuators(LED_PIN, BUZZER_PIN);
@@ -47,6 +49,10 @@ void onMessageReceived(char *topic, byte *payload, unsigned int length)
       }
     }
   }
+  if (doc.containsKey("oled")) {
+      String texteEcran = doc["oled"].as<String>();
+      oled.showMessage(texteEcran);
+    }
 }
 
 void setup()
@@ -57,6 +63,7 @@ void setup()
   ultrasonic.begin();
   mqtt.begin();
   mqtt.setCallback(onMessageReceived);
+  oled.begin();
 
   String listenTopic = "labo/device/" + mqtt.getMacAddress() + "/command";
   mqtt.subscribe(listenTopic); 
