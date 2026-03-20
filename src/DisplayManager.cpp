@@ -1,11 +1,12 @@
 #include "DisplayManager.h"
+#include "Config.h"
 
 // Initialisation de l'objet Adafruit
 DisplayManager::DisplayManager() : _display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET) {
 }
 
 void DisplayManager::begin() {
-  Wire.begin(21, 22);
+  Wire.begin(SCREEN_SDA, SCREEN_SCL);
 
   if(!_display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
     Serial.println("OLED erreur d'initialisation !");
