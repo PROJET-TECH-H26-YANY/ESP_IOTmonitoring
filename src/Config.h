@@ -1,8 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-const char *WIFI_SSID = "TON_WIFI";
-const char *WIFI_PASS = "TON_PASS";
+const char *WIFI_SSID = "Sk-y";
+const char *WIFI_PASS = "Sk1ndy2608";
 
 const char *MQTT_SERVER = "185.53.209.197";
 const int MQTT_PORT = 1883;

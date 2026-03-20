@@ -75,7 +75,6 @@ void loop()
     mqtt.publish(TOPIC_AUTH, payload);
 
     actuators.shortBeep();
-    delay(2000);
   }
 
   if (isSessionActive)
