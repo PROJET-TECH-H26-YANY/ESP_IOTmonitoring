@@ -15,6 +15,9 @@ DistanceManager ultrasonic(ULTRA_RX_PIN, ULTRA_TX_PIN);
 bool isSessionActive = false;
 unsigned long lastTelemetryTime = 0;
 
+unsigned long lastScanTime = 0;
+const long scanCooldown = 2000;
+
 void onMessageReceived(char *topic, byte *payload, unsigned int length)
 {
   String msg = "";
@@ -56,7 +59,7 @@ void setup()
   mqtt.setCallback(onMessageReceived);
 
   String listenTopic = "labo/device/" + mqtt.getMacAddress() + "/command";
-  mqtt.subscribe(listenTopic.c_str());
+  mqtt.subscribe(listenTopic); 
 
   Serial.println("System Ready! Listening on: " + listenTopic);
 }
@@ -64,24 +67,23 @@ void setup()
 void loop()
 {
   mqtt.loop();
+  unsigned long currentTime = millis();
 
-  String badgeUid = rfid.readBadge();
+    String badgeUid = rfid.readBadge();
+    if (badgeUid != "")
+    {
+      Serial.println("Badge Scanned: " + badgeUid);
+      lastScanTime = currentTime;
+      String payload = "{\"mac\": \"" + mqtt.getMacAddress() + "\", \"nfc\": \"" + badgeUid + "\"}";
+      mqtt.publish(TOPIC_AUTH, payload);
+      actuators.shortBeep();
 
-  if (badgeUid != "")
-  {
-    Serial.println("Badge Scanned: " + badgeUid);
-
-    String payload = "{\"mac\": \"" + mqtt.getMacAddress() + "\", \"nfc\": \"" + badgeUid + "\"}";
-    mqtt.publish(TOPIC_AUTH, payload);
-
-    actuators.shortBeep();
-    delay(2000);
-  }
+      delay(1000);
+    }
+  
 
   if (isSessionActive)
   {
-    unsigned long currentTime = millis();
-
     if (currentTime - lastTelemetryTime >= TELEMETRY_INTERVAL)
     {
       lastTelemetryTime = currentTime;
