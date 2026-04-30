@@ -1,5 +1,24 @@
 #include "MqttManager.h"
 
+void MqttManager::setCommandCallback(JsonCommandCallback callback) {
+  _onCommand = callback;
+}
+
+void MqttManager::handlePayload(byte* payload, unsigned int length) {
+  String msg = "";
+  for (unsigned int i = 0; i < length; i++) {
+    msg += (char)payload[i];
+  }
+
+  JsonDocument doc;
+  DeserializationError error = deserializeJson(doc, msg);
+
+  if (!error && _onCommand) {
+    _onCommand(doc); // On envoie le dictionnaire JSON tout propre au main
+  } else if (error) {
+    Serial.println("Erreur de parsing JSON MQTT");
+  }
+}
 MqttManager::MqttManager(const char *ssid, const char *password, const char *mqttServer, int mqttPort)
 {
     _ssid = ssid;

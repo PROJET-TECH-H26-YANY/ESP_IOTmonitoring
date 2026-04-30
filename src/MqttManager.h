@@ -1,8 +1,10 @@
 #ifndef MQTT_MANAGER_H
 #define MQTT_MANAGER_H
-
+#include <ArduinoJson.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
+
+typedef void (*JsonCommandCallback)(JsonDocument& doc);
 
 class MqttManager
 {
@@ -14,6 +16,8 @@ private:
   const char *_mqttServer;
   int _mqttPort;
   String _topicEcoute;
+
+  JsonCommandCallback _onCommand;
 
   void setupWiFi();
   void reconnect();
@@ -27,6 +31,8 @@ public:
   void subscribe(String topic);
   void setCallback(MQTT_CALLBACK_SIGNATURE);
   String getMacAddress();
+  void setCommandCallback(JsonCommandCallback callback); 
+  void handlePayload(byte* payload, unsigned int length);
 };
 
 #endif

@@ -4,7 +4,8 @@
 #include "MqttManager.h"
 #include "DisplayManager.h"
 extern MqttManager mqtt;
-extern UltrasonicManager ultrasonic; 
+extern DisplayManager display;
+extern DistanceManager ultrasonic;
 extern bool isSessionActive;
 
 const unsigned long TELEMETRY_INTERVAL = 1000;
